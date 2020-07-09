@@ -1,0 +1,5 @@
+{
+    "AppSyncApiName": "smplnotezapi",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": "false"
+}

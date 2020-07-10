@@ -6,6 +6,7 @@ import { v4 as uuid } from 'uuid';
 import { listNotes } from './graphql/queries';
 import {
   createNote as CreateNote,
+  updateNote as UpdateNote,
   deleteNote as DeleteNote,
 } from './graphql/mutations';
 import './App.css';
@@ -73,6 +74,24 @@ function App() {
     dispatch({ type: 'SET_INPUT', name: e.target.name, value: e.target.value });
   }
 
+  async function updateNote(note) {
+    const index = state.notes.findIndex((n) => n.id === note.id);
+    const notes = [...state.notes];
+    notes[index].completed = !note.completed;
+    dispatch({ type: 'SET_NOTES', notes });
+    try {
+      await API.graphql({
+        query: UpdateNote,
+        variables: {
+          input: { id: note.id, completed: notes[index].completed },
+        },
+      });
+      console.log('note successfully updated!');
+    } catch (err) {
+      console.log('error: ', err);
+    }
+  }
+
   async function deleteNote({ id }) {
     const index = state.notes.findIndex((n) => n.id === id);
     const notes = [
@@ -98,6 +117,9 @@ function App() {
         actions={[
           <p style={styles.p} onClick={() => deleteNote(item)}>
             DELETE
+          </p>,
+          <p style={styles.p} onClick={() => updateNote(item)}>
+            {item.completed ? 'COMPLETED' : 'INCOMPLETED'}
           </p>,
         ]}
       >
@@ -149,6 +171,6 @@ function App() {
 const styles = {
   input: { marginBottom: 10 },
   item: { textAlign: 'left' },
-  p: { color: '#1890ff' },
+  p: { color: '#1890ff',  marginBottom: 0 },
 };
 export default App;
